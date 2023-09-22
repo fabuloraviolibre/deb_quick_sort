@@ -1,25 +1,27 @@
 """
 This script aims to show how we chose the thresholds of quicksort_v2 and quicksort-v3. We apply the trial and error method
-To compute time execution, we chose the serie 1 - generation 2 (size: 10000, magnitude:1000000).
+To compute time execution, we chose the serie 1 - generation 4 (size: 400000, magnitude:1000000).
 """
 
 import time
+import sys
 import matplotlib.pyplot as plt
 
 from load_test_set import load_gen
 from sorts import quicksort_v2, quicksort_v3
 
 gen = load_gen(1,4)
-thresholds = [i for i in range(1, 10000)]
+thresholds = [i for i in range(1, 100)]
 
 
-"""Threshold of quicksort_v2"""
+"""Threshold of quicksort_v2
 
 mean_durations = []
 
 for t in thresholds:
+    new_gen = [sample.copy() for sample in gen]
     duration = 0.0
-    for sample in gen:
+    for sample in new_gen:
         start_time = time.time()
         quicksort_v2(sample, t)
         end_time = time.time()
@@ -36,14 +38,19 @@ plt.ylabel('Time execution')
 plt.title('Time execution according to thresholds (quicksort_v2)')
 plt.show()
 
+"""
 
-"""Threshold of quicksort_v3
+
+"""Threshold of quicksort_v3"""
 
 mean_durations = []
 
 for t in thresholds:
+    print(t)
+    new_gen = [sample.copy() for sample in gen]
     duration = 0.0
-    for sample in gen:
+    for sample in new_gen:
+        print(sample[:10])
         start_time = time.time()
         quicksort_v3(sample, t)
         end_time = time.time()
@@ -59,5 +66,3 @@ plt.xlabel('Thresholds')
 plt.ylabel('Time execution')
 plt.title('Time execution according to thresholds (quicksort_v3)')
 plt.show()
-
-"""
