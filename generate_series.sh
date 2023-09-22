@@ -38,13 +38,13 @@ if [ $1 -eq 3 ]; then
   python3 gen.py -s 10  -n 10 -m 10 -r 3001 -p 0 
   mv -v ./samples/* serie3/gen1/ 
   mkdir serie3/gen2/
-  python3 gen.py -s 10  -n 100 -m 100 -r 3002 -p 0 
+  python3 gen.py -s 100  -n 10 -m 100 -r 3002 -p 0 
   mv -v ./samples/* serie3/gen2/ 
   mkdir serie3/gen3/
-  python3 gen.py -s 10  -n 1000 -m 1000 -r 3003 -p 0 
+  python3 gen.py -s 1000 -n 10 -m 1000 -r 3003 -p 0 
   mv -v ./samples/* serie3/gen3/ 
   mkdir serie3/gen4/
-  python3 gen.py -s 10  -n 10000 -m 10000 -r 3004 -p 0 
+  python3 gen.py -s 10000  -n 10 -m 10000 -r 3004 -p 0 
   mv -v ./samples/* serie3/gen4/ 
 fi
 
@@ -54,13 +54,13 @@ if [ $1 -eq 4 ]; then
   python3 gen.py -s 10  -n 10 -m 10 -r 4001 -p 1 
   mv -v ./samples/* serie4/gen1/ 
   mkdir serie4/gen2/
-  python3 gen.py -s 10  -n 100 -m 10 -r 4002 -p 1 
+  python3 gen.py -s 100  -n 10 -m 10 -r 4002 -p 1 
   mv -v ./samples/* serie4/gen2/ 
   mkdir serie4/gen3/
-  python3 gen.py -s 10  -n 1000 -m 10 -r 4003 -p 1 
+  python3 gen.py -s 1000  -n 10 -m 10 -r 4003 -p 1 
   mv -v ./samples/* serie4/gen3/ 
   mkdir serie4/gen4/
-  python3 gen.py -s 10  -n 10000 -m 10 -r 4004 -p 1 
+  python3 gen.py -s 10000  -n 10 -m 10 -r 4004 -p 1 
   mv -v ./samples/* serie4/gen4/ 
 fi
 
