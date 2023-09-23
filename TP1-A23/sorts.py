@@ -1,8 +1,4 @@
 from random import randint
-import time
-import matplotlib.pyplot as plt
-
-from load_test_set import load_gen
 
 
 """--------------------------- Counting sort ---------------------------"""
@@ -56,6 +52,7 @@ def divide(l: list, first:int, last:int, pivot:int) ->int:
     l[j], l[last] = l[last], l[j]
     return j
 
+
 def insertion_sort(l: list, first: int, last:int):
     """
     Args:
@@ -71,6 +68,7 @@ def insertion_sort(l: list, first: int, last:int):
             l[j+1] = l[j]
             j -= 1
         l[j+1] = val
+
 
 def quicksort_v1(l: list, **kwargs):
     """
@@ -88,6 +86,7 @@ def quicksort_v1(l: list, **kwargs):
         pivot = divide(l, first, last, pivot)
         quicksort_v1(l, first=first, last=pivot-1)
         quicksort_v1(l, first=pivot+1, last=last)
+
 
 def quicksort_v2(l: list, threshold=22, **kwargs):
     """
@@ -108,6 +107,7 @@ def quicksort_v2(l: list, threshold=22, **kwargs):
         quicksort_v2(l, threshold=threshold, first=pivot+1, last=last)
     elif last - first >= 1:
         insertion_sort(l, first, last)
+
 
 def quicksort_v3(l: list, threshold=34, **kwargs):
     """
