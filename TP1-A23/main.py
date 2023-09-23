@@ -1,9 +1,11 @@
 import time
+import numpy as np
 
 from load_test_set import load_gen
 from sorts import counting_sort, quicksort_v1, quicksort_v2, quicksort_v3
 
-def compute_time_execution(serie: int, generation: int, sort: str) ->float:
+
+def compute_each_time(serie: int, generation: int, sort: str) ->float:
     """
     Args:
         serie(int): serie
@@ -47,8 +49,3 @@ def compute_time_execution(serie: int, generation: int, sort: str) ->float:
     duration /= 10
 
     return duration
-
-
-for i in range(1,5):
-    t = compute_time_execution(1, i, 'counting')
-    print(t)
