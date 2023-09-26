@@ -88,7 +88,7 @@ def quicksort_v1(l: list, **kwargs):
         quicksort_v1(l, first=pivot+1, last=last)
 
 
-def quicksort_v2(l: list, threshold=22, **kwargs):
+def quicksort_v2(l: list, threshold=25, **kwargs):
     """
     Args:
         l(list): list to sort
@@ -109,7 +109,7 @@ def quicksort_v2(l: list, threshold=22, **kwargs):
         insertion_sort(l, first, last)
 
 
-def quicksort_v3(l: list, threshold=34, **kwargs):
+def quicksort_v3(l: list, threshold=25, **kwargs):
     """
     Args:
         l(list): list to sort

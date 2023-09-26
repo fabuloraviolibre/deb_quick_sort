@@ -7,18 +7,19 @@ import time
 import sys
 import matplotlib.pyplot as plt
 
-from load_test_set import load_gen
+from main import load_gen
 from sorts import quicksort_v2, quicksort_v3
 
 gen = load_gen(1,4)
 thresholds = [i for i in range(1, 100)]
 
 
-"""Threshold of quicksort_v2
+"""Threshold of quicksort_v2"""
 
 mean_durations = []
 
 for t in thresholds:
+    print(t, '/99')
     new_gen = [sample.copy() for sample in gen]
     duration = 0.0
     for sample in new_gen:
@@ -36,9 +37,8 @@ plt.plot(thresholds, mean_durations)
 plt.xlabel('Thresholds')
 plt.ylabel('Time execution')
 plt.title('Time execution according to thresholds (quicksort_v2)')
+plt.savefig('find_recursive_thresholds/quicksort_v2.png')
 plt.show()
-
-"""
 
 
 """Threshold of quicksort_v3"""
@@ -46,11 +46,10 @@ plt.show()
 mean_durations = []
 
 for t in thresholds:
-    print(t)
+    print(t, '/99')
     new_gen = [sample.copy() for sample in gen]
     duration = 0.0
     for sample in new_gen:
-        print(sample[:10])
         start_time = time.time()
         quicksort_v3(sample, t)
         end_time = time.time()
@@ -65,4 +64,5 @@ plt.plot(thresholds, mean_durations)
 plt.xlabel('Thresholds')
 plt.ylabel('Time execution')
 plt.title('Time execution according to thresholds (quicksort_v3)')
+plt.savefig('find_recursive_thresholds/quicksort_v3.png')
 plt.show()
