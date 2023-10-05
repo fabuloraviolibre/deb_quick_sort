@@ -43,16 +43,3 @@ def test_rapport(algo: str, i: int):
     plt.title(f'Test rapport {algo} série {i}')
     plt.savefig(f'TP1-A23/tests/rapport/{algo}_serie{i}.png')
     plt.show()
-    
-test_rapport("counting", 1)
-test_rapport("counting", 2)
-test_rapport("counting", 3)
-
-test_rapport("quick", 1)
-test_rapport("quick", 4)
-
-test_rapport("quickSeuil", 1)
-test_rapport("quickSeuil", 4)
-
-test_rapport("quickSeuilRandom", 1)
-test_rapport("quickSeuilRandom", 4)
