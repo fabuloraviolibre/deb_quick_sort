@@ -1,6 +1,3 @@
-from load_test_set import load_serie
-
-
 def volume(brick: list) -> float:
     """
     Args:
@@ -24,12 +21,13 @@ def greedy(bricks: list) -> list:
 
     while bricks:
 
-        #Choose the best next brick
+        #Choose the best next brick (criteria: best volume)
         max_value, max_index = bricks[0], 0
         for i in range(len(bricks)):
             if volume(bricks[i]) > volume(max_value):
                 max_value, max_index = bricks[i], i
         
+        #The brick is no longer available
         del(bricks[max_index])
 
         #Check if chosen brick can be on top of the tower
@@ -38,14 +36,5 @@ def greedy(bricks: list) -> list:
                 tower.append(max_value)
         else:
             tower.append(max_value)
-        
-    #Calculate the total height of the tower
-    H = 0
-    for brick in tower:
-        H += brick[0]
 
-    return tower, H
-
-
-samples = load_serie(250)
-tower, H = greedy(samples)
+    return tower
