@@ -1,7 +1,8 @@
 import os
-
+"""
 from greedy import greedy
 from probabilistic import probabilistic
+"""
 
 
 def load_serie(serie: int) -> list:
@@ -36,10 +37,11 @@ def get_height(tower: list) -> float:
 
     return H
 
-
+"""
 #Change the algorithm as you want
 samples = load_serie(250)
 for sample in samples:
     tower = probabilistic(sample)
     H = get_height(tower)
     print(H)
+"""

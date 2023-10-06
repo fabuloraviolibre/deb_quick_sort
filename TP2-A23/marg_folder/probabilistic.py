@@ -24,11 +24,21 @@ def probabilistic(bricks: list) -> list:
 
     fitnesses = sorted(bricks, key=f, reverse=True)
     s = sum([ np.exp(f(b)) for b in fitnesses ])
-
     probabilities = [ np.exp(f(b))/s for b in fitnesses ]
-    max_value = max(probabilities)
 
+    for i in range(len(fitnesses)):
+        chosen_brick = np.random.choice(fitnesses, p=probabilities)
+        
+        
+
+    """
     tower.append(max_value)
     probabilities.remove(max_value)
+    """
 
     return tower
+
+
+from main import load_serie
+samples = load_serie(250)
+probabilistic(samples[0])
