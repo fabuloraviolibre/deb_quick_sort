@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     count = 0
     sizes = [250, 500, 750, 1000, 2500, 5000, 7500, 10000]  # Change the list of sizes to your will
-    nb_exemplaires = 3                                      # Change the number of samples per size aswell
+    nb_exemplaires = 10                                      # Change the number of samples per size aswell
     for size in sizes:
         for i in range(1, nb_exemplaires + 1):
             f = open(f'samples/sample_{size}_{i}.txt', 'w')
