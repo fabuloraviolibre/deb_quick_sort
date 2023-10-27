@@ -11,12 +11,12 @@ if __name__ == "__main__":
 
     count = 0
     sizes = [250, 500, 750, 1000, 2500, 5000, 7500, 10000]  # Change the list of sizes to your will
-    nb_exemplaires = 10                                      # Change the number of samples per size aswell
+    nb_exemplaires = 1                                      # Change the number of samples per size aswell
     for size in sizes:
         for i in range(1, nb_exemplaires + 1):
             f = open(f'samples/sample_{size}_{i}.txt', 'w')
             for n in range(size):
-                h, l, p = np.random.randint(1, int(np.cbrt(size))+2, 3)
+                h, l, p = np.random.randint(1, int(np.cbrt(size)), 3)
                 f.write(f'{h} {l} {p}\n')
             f.close()
             count += 1
