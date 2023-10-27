@@ -10,6 +10,20 @@ def perf_dynm(size: int):
         h = dynam_sort(list)
         end = time.time()
         tab += [(h, end - start)]
-    print(tab)
+    return tab
 
-perf_dynm(7500)
+def mean_time_dynm(size):
+    tab = perf_dynm(size)
+    nb_ex = 0
+    time = 0
+
+    for perf in tab :
+        nb_ex += 1
+        time += perf[1]
+
+    mean_time = time/nb_ex
+
+    return mean_time
+
+print(perf_dynm(500)[1])
+
