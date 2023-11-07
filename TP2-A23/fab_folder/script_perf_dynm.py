@@ -25,5 +25,31 @@ def mean_time_dynm(size):
 
     return mean_time
 
-print(perf_dynm(500)[1])
+
+def max_hauteur(tab):
+    max_ind = 0
+    max = tab[max_ind][0][1]
+    n = len(tab)
+
+    i = 1
+    while i < n :
+        if tab[i][0][1] > tab[max_ind][0][1]:
+            max = tab[i][0][1]
+            max_ind = i
+        i += 1
+
+    return max, tab[max_ind]
+
+def hauteur_time(size: int):
+    tab = perf_dynm(size)
+    max_h, tour = max_hauteur(tab)
+    m_time = mean_time_dynm(size)
+    print(f'{size} : ( hauteur max : {max_h}, time : {m_time}')
+    print(tour, "\n")
+
+
+for size in [250, 500, 750, 1000, 2500, 5000, 7500, 10000]:
+   hauteur_time(size)
+
+
 
