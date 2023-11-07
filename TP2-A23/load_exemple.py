@@ -30,4 +30,3 @@ def load_gen(size: int, nb_ex: int) ->list:
     else:
         raise ValueError("serie and gen have to be in range(1,5).")
     
-(load_gen(500, 2))
