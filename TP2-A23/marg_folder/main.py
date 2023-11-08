@@ -35,22 +35,52 @@ def get_height(tower: list) -> float:
     return H
 
 
-def get_results(algo: str, serie: int) -> (float, float):
+def get_results(algo: str, serie: int) -> (float, list):
     """
     Args:
         algo (str): 'greedy' or 'probabilistic'
         serie (int): size of the sample to use
     Returns:
         height (float): height of the tower
+        tower (list): list of bricks to form the tower
+    """
+    
+    sample = load_serie(serie)
+    h = 0.0
+
+    if algo == 'greedy':
+        tower = greedy(sample)
+    
+    elif algo == 'probabilistic':
+        #5 loops to find the best solution
+        tower = probabilistic(sample)
+        for i in range(4):
+            temp_tower = probabilistic(sample)
+            if get_height(temp_tower) > get_height(tower):
+                tower = temp_tower
+    
+    else:
+        raise ValueError("Algorithm invalid")
+    
+    h = get_height(tower)
+    return h, tower
+
+
+def get_time_results(algo: str, serie: int) -> float:
+    """
+    Args:
+        algo (str): 'greedy' or 'probabilistic'
+        serie (int): size of the sample to use
+    Returns:
         time (float): time of execution of the algorithm
     """
     
     sample = load_serie(serie)
-    h, t = 0.0, 0.0
+    t = 0.0
 
     if algo == 'greedy':
         start = time()
-        tower = greedy(sample)
+        greedy(sample)
         end = time()
     
     elif algo == 'probabilistic':
@@ -67,9 +97,7 @@ def get_results(algo: str, serie: int) -> (float, float):
         raise ValueError("Algorithm invalid")
     
     t = end - start
-    h = get_height(tower)
-
-    return h,t
+    return t
 
 
 def plot_perf_probabilistic():
@@ -94,7 +122,6 @@ def plot_perf_probabilistic():
 
         print(f'Iteration {n}/100 : the best height is {h}.')
 
-    
     plt.clf()
     plt.plot(iterations, heights)
     plt.xlabel('Iterations')
@@ -102,6 +129,3 @@ def plot_perf_probabilistic():
     plt.legend()
     plt.title('Evolution du rapport (Hauteur atteinte) / (Hauteur optimale)')
     plt.show()
-
-
-plot_perf_probabilistic()
