@@ -1,5 +1,6 @@
 import numpy as np
 from load_exemple import load_gen 
+import time
 
 
 ######
@@ -21,7 +22,7 @@ def find_max_index(tab):
 
     return index
 
-def dynam_sort(tab: list) -> int:
+def dynam_sort(tab: list):
     n = len(tab)
     h_tab = np.zeros(n, dtype=tuple)
 
@@ -53,3 +54,187 @@ def dynam_sort(tab: list) -> int:
 
     #on retourne la tour(par ordre décroissant de surface) et sa hauteur
     return (tower.reverse(), max_high)
+
+'''
+tab = load_gen(1000,1)
+tower, max_high = dynam_sort(tab)
+
+print(max_high)
+'''
+######
+#Algorithme greedy
+######
+
+def volume(brick: list) -> float:
+    """
+    Args:
+        brick (list): features (height, width, depth) of the brick
+    Returns:
+        float: volume
+    """
+
+    return brick[0]*brick[1]*brick[2]
+
+
+def greedy(bricks: list) -> list:
+    """
+    Args:
+        bricks (list): available bricks and their features (height, width, depth)
+    Returns:
+        list: sorted list
+    """
+
+    tower = []
+
+    #Criteria: best volume
+    sorted_bricks = sorted(bricks, key=volume, reverse=True)
+
+    while sorted_bricks:
+
+        #Choose the best next brick
+        b = sorted_bricks[0]
+
+        #The brick is no longer available
+        del(sorted_bricks[0])
+
+        #Check if chosen brick can be on top of the tower
+        if tower:
+            if tower[-1][1] > b[1] and tower[-1][2] > b[2]:
+                tower.append(b)
+        else:
+            tower.append(b)
+
+    return tower
+
+######
+#Algorithme probabilistique
+######
+
+import numpy as np
+import random
+
+
+def f(brick: list) -> float:
+    """Criteria function: f(b_i) = Hauteur(b_i) + Aire_base(b_i)
+    Args:
+        brick (list): features (height, width, depth) of the brick
+    Returns:
+        float: result of softmax function
+    """
+
+    return brick[0] + brick[1]*brick[2]
+
+
+def probabilistic(bricks: list) -> list:
+    """
+    Args:
+        bricks (list): available bricks and their features (height, width, depth)
+    Returns:
+        list: sorted list
+    """
+
+    tower = []
+    indexes = [i for i in range(len(bricks))]
+
+    #Compute probabilities
+    sum_exp = sum([np.exp(f(b)) for b in bricks])
+    smx = [np.exp(f(b))/sum_exp for b in bricks]
+
+    for k in range(len(bricks)):
+
+        #Choose a brick
+        i = random.choices(indexes, smx)[0]
+        b = bricks[i]
+
+        #Put the probability at 0.0
+        smx[i] = 0.0
+
+        #Check if chosen brick can be on top of the tower
+        if tower:
+            if tower[-1][1] > b[1] and tower[-1][2] > b[2]:
+                tower.append(b)
+        else:
+            tower.append(b)
+    
+    return tower
+
+######
+#Traduit dans le bon format pour glouton et probabilistique 
+######
+
+def get_height(tower: list) -> float:
+    """
+    Args:
+        tower (list): bricks obtained with any algorithm
+    Returns:
+        float: height of the tower
+    """
+
+    H = 0
+    for brick in tower:
+        H += brick[0]
+
+    return H
+
+def get_time_results(algo: str, serie: int) -> float:
+    """
+    Args:
+        algo (str): 'greedy' or 'probabilistic'
+        serie (int): size of the sample to use
+    Returns:
+        time (float): time of execution of the algorithm
+    """
+    
+    sample = load_gen(serie, 1)
+    t = 0.0
+
+    if algo == 'glouton':
+        start = time.time()
+        greedy(sample)
+        end = time.time()
+    
+    elif algo == 'proba':
+        start = time()
+        #5 loops to find the best solution
+        tower = probabilistic(sample)
+        for i in range(4):
+            temp_tower = probabilistic(sample)
+            if get_height(temp_tower) > get_height(tower):
+                tower = temp_tower
+        end = time()
+    
+    else:
+        raise ValueError("Algorithm invalid")
+    
+    t = end - start
+    return t
+
+def get_results(algo: str, serie: int) -> (float, list):
+    """
+    Args:
+        algo (str): 'greedy' or 'probabilistic'
+        serie (int): size of the sample to use
+    Returns:
+        height (float): height of the tower
+        tower (list): list of bricks to form the tower
+    """
+    
+    sample = load_gen(serie, 1)
+    h = 0.0
+
+    if algo == 'glouton':
+        tower = greedy(sample)
+    
+    elif algo == 'proba':
+        #5 loops to find the best solution
+        tower = probabilistic(sample)
+        for i in range(4):
+            temp_tower = probabilistic(sample)
+            if get_height(temp_tower) > get_height(tower):
+                tower = temp_tower
+    
+    else:
+        raise ValueError("Algorithm invalid")
+    
+    h = get_height(tower)
+    return h, tower

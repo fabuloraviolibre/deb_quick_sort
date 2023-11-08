@@ -6,7 +6,7 @@ Utilisation
 
 Arguments optionnels
 	-p affiche les blocs utilisés dans la construction de la tour chacun sur une ligne (hauteur, largeur, profondeur) en commençant par le bas.
-	-h affiche la hauteur totale atteinte par la tour.
+	-H affiche la hauteur totale atteinte par la tour.
 	-t affiche le temps d’exécution en ms, sans unité ni texte superflu 
 Important: l’option -e doit accepter des fichiers avec des paths absolus.
 
@@ -15,11 +15,11 @@ COMMENT
 is_a=1
 is_e=1
 is_p=1
-is_h=1
+is_H=1
 is_t=1
 
 #Get arguments given with options
-while getopts "a:e:pt" opt; do
+while getopts "a:e:pht" opt; do
     case $opt in
         a)
             sort=$OPTARG
@@ -39,6 +39,9 @@ while getopts "a:e:pt" opt; do
             ;;
         p)
             is_p=0
+            ;;
+        h)
+            is_H=0
             ;;
         t)
             is_t=0
@@ -61,12 +64,20 @@ if [ $is_e -eq 1 ]; then
 fi
 
 #Execute the algorithm
-if [ $is_p -eq 0 ] && [ $is_t -eq 0 ]; then
-    python3 main.py -a $sort -e "$path" -p -t
-elif [ $is_p -eq 0 ]; then
-    python3 main.py -a $sort -e "$path" -p
-elif [ $is_t -eq 0 ]; then
+if [ $is_p -eq 0 ]  && [ $is_H -eq 0 ] && [ $is_t -eq 0 ]; then
+    python3 main.py -a $sort -e "$path" -p -H -t
+elif [ $is_p -eq 0 ]  && [ $is_H -eq 0 ] && [ $is_t -eq 1 ]; then
+    python3 main.py -a $sort -e "$path" -p -H 
+elif [ $is_p -eq 0 ]  && [ $is_H -eq 1 ] && [ $is_t -eq 0 ]; then
+    python3 main.py -a $sort -e "$path" -p -t 
+elif [ $is_p -eq 0 ]  && [ $is_H -eq 1 ] && [ $is_t -eq 1 ]; then
+    python3 main.py -a $sort -e "$path" -p 
+elif [ $is_p -eq 1 ]  && [ $is_H -eq 0 ] && [ $is_t -eq 0 ]; then
+    python3 main.py -a $sort -e "$path" -H -t
+elif [ $is_p -eq 1 ]  && [ $is_H -eq 0 ] && [ $is_t -eq 1 ]; then
+    python3 main.py -a $sort -e "$path" -H
+elif [ $is_p -eq 1 ]  && [ $is_H -eq 1 ] && [ $is_t -eq 0 ]; then
     python3 main.py -a $sort -e "$path" -t
-else
-    python3 main.py -a $sort -e "$path"
+else  
+    python3 main.py -a $sort -e "$path" 
 fi

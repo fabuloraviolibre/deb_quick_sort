@@ -2,8 +2,9 @@ import time
 import os
 import argparse
 from load_exemple import load_gen
+import re
 
-from sorts import dynam_sort, greedy, proba
+from sorts import dynam_sort, get_results, get_time_results
 
 def load_examplaire(path: str) ->list:
     """
@@ -14,10 +15,12 @@ def load_examplaire(path: str) ->list:
     """
 
     with open(path, 'r') as f:
-        l = f.read().split(' ')
-        del(l[-1])
-        l = [int(val) for val in l]
-    return l
+        match = re.search(r'(\d+)_\d+\.txt', path)
+        if match:
+            size = int(match.group(1))
+
+    return size
+
 
 
 def compute_exemplaire(path: str, sort: str) ->float:
@@ -30,12 +33,12 @@ def compute_exemplaire(path: str, sort: str) ->float:
         float: mean duration of time execution
     """
 
-    size, serie = load_examplaire(path)
+    size = load_examplaire(path)
 
-    if serie not in range(1,11) or size not in [250, 500, 1000, 2500, 5000, 7500, 10000] or sort not in ['glouton', 'progdyn', 'proba']:
+    if  size not in [250, 500, 1000, 2500, 5000, 7500, 10000] or sort not in ['glouton', 'progdyn', 'proba']:
         raise ValueError("Arguments not valid.")
     
-    exemplaire = load_gen(size, serie)
+    exemplaire = load_gen(size, 1)
 
     if sort == 'progdyn':
         start_time = time.time()
@@ -43,74 +46,15 @@ def compute_exemplaire(path: str, sort: str) ->float:
         end_time = time.time()
         duration = (end_time - start_time)
 
+    elif sort == 'glouton':
+            hauteur, tour = get_results(sort, size)
+            duration = get_time_results(sort, size)
+
+    elif sort == 'proba':
+            hauteur, tour = get_results(sort, size)
+            duration = get_time_results(sort, size)
+
     return tour, hauteur, duration
-"""
-    elif sort == 'quick':
-        for sample in gen:
-            start_time = time.time()
-            quicksort_v1(sample)
-            end_time = time.time()
-            duration += (end_time - start_time)
-
-    elif sort == 'quickSeuil':
-        for sample in gen:
-            start_time = time.time()
-            quicksort_v2(sample)
-            end_time = time.time()
-            duration += (end_time - start_time)
-
-    else:
-        for sample in gen:
-            start_time = time.time()
-            quicksort_v3(sample)
-            end_time = time.time()
-            duration += (end_time - start_time)
-"""  
-
-
-
-def compute_time_examplaire(path: str, sort: str) ->float:
-    """
-    Args:
-        path(str): absolute path of the examplaire to sort
-        sort(str): type of sorting
-    Returns:
-        list: sorted examplaire
-        float: mean duration of time execution
-    """
-
-    if sort not in ['counting', 'quick', 'quickSeuil', 'quickRandomSeuil']:
-        raise ValueError("Arguments not valid.")
-    
-    sample = load_examplaire(path)
-
-    if sort == 'counting':
-        start_time = time.time()
-        sample = counting_sort(sample)
-        end_time = time.time()
-        duration = (end_time - start_time)
-
-    elif sort == 'quick':
-        start_time = time.time()
-        quicksort_v1(sample)
-        end_time = time.time()
-        duration = (end_time - start_time)
-
-    elif sort == 'quickSeuil':
-        start_time = time.time()
-        quicksort_v2(sample)
-        end_time = time.time()
-        duration = (end_time - start_time)
-
-    else:
-        start_time = time.time()
-        quicksort_v3(sample)
-        end_time = time.time()
-        duration = (end_time - start_time)
-
-    return sample, duration
-
-
 
 if __name__ == "__main__":
     # Parse arguments
@@ -121,7 +65,7 @@ if __name__ == "__main__":
                         help="[path_vers_exemplaire]")
     parser.add_argument("-p", "--tour", required=False, action='store_true',
                         help="Affiche la tour construite, en partant de la brique du bas")
-    parser.add_argument("-h", "--hauteur", required=False, action='store_true',
+    parser.add_argument("-H", "--hauteur", required=False, action='store_true',
                         help="Affiche la hauteur de la tour")
     parser.add_argument("-t", "--time", required=False, action='store_true',
                         help="Affiche le temps d’exécution en ms")
@@ -132,9 +76,7 @@ if __name__ == "__main__":
     
     if args.tour:
         print(tour, end=' ')
-        print("\n")
     if args.hauteur:
         print(hauteur)
-        print("\n")
     if args.time :
         print(duration)
