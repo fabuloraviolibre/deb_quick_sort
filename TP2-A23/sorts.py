@@ -53,14 +53,11 @@ def dynam_sort(tab: list):
         tower += [tab[parcourt]]
 
     #on retourne la tour(par ordre décroissant de surface) et sa hauteur
-    return (tower.reverse(), max_high)
+    tower.reverse()
 
-'''
-tab = load_gen(1000,1)
-tower, max_high = dynam_sort(tab)
+    return (tower, max_high)
 
-print(max_high)
-'''
+
 ######
 #Algorithme greedy
 ######
