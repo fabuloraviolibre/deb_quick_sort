@@ -19,22 +19,22 @@ def greedy(bricks: list) -> list:
 
     tower = []
 
-    while bricks:
+    #Criteria: best volume
+    sorted_bricks = sorted(bricks, key=volume, reverse=True)
 
-        #Choose the best next brick (criteria: best volume)
-        max_value, max_index = bricks[0], 0
-        for i in range(len(bricks)):
-            if volume(bricks[i]) > volume(max_value):
-                max_value, max_index = bricks[i], i
-        
+    while sorted_bricks:
+
+        #Choose the best next brick
+        b = sorted_bricks[0]
+
         #The brick is no longer available
-        del(bricks[max_index])
+        del(sorted_bricks[0])
 
         #Check if chosen brick can be on top of the tower
         if tower:
-            if tower[-1][1] > max_value[1] and tower[-1][2] > max_value[2]:
-                tower.append(max_value)
+            if tower[-1][1] > b[1] and tower[-1][2] > b[2]:
+                tower.append(b)
         else:
-            tower.append(max_value)
+            tower.append(b)
 
     return tower
