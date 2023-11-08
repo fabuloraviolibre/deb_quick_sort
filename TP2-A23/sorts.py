@@ -194,14 +194,14 @@ def get_time_results(algo: str, serie: int) -> float:
         end = time.time()
     
     elif algo == 'proba':
-        start = time()
+        start = time.time()
         #5 loops to find the best solution
         tower = probabilistic(sample)
         for i in range(4):
             temp_tower = probabilistic(sample)
             if get_height(temp_tower) > get_height(tower):
                 tower = temp_tower
-        end = time()
+        end = time.time()
     
     else:
         raise ValueError("Algorithm invalid")
