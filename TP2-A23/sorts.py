@@ -53,7 +53,9 @@ def dynam_sort(tab: list):
         tower += [tab[parcourt]]
 
     #on retourne la tour(par ordre décroissant de surface) et sa hauteur
-    return (tower.reverse(), max_high)
+    tower.reverse()
+
+    return (tower, max_high)
 
 
 for size in [250, 500, 750, 1000, 2500, 5000, 7500, 10000]:
@@ -196,14 +198,14 @@ def get_time_results(algo: str, serie: int) -> float:
         end = time.time()
     
     elif algo == 'proba':
-        start = time()
+        start = time.time()
         #5 loops to find the best solution
         tower = probabilistic(sample)
         for i in range(4):
             temp_tower = probabilistic(sample)
             if get_height(temp_tower) > get_height(tower):
                 tower = temp_tower
-        end = time()
+        end = time.time()
     
     else:
         raise ValueError("Algorithm invalid")

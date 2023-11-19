@@ -75,8 +75,8 @@ if __name__ == "__main__":
     tour, hauteur, duration = compute_exemplaire(args.examplaire, args.algorithm)
     
     if args.tour:
-        print(tour, end=' ')
+        print('tour :', tour)
     if args.hauteur:
-        print(hauteur)
+        print('hauteur :', hauteur)
     if args.time :
-        print(duration)
+        print('temps de calcul :', duration)
