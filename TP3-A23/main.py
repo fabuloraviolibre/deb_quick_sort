@@ -111,8 +111,7 @@ def algorithm(path: str, print_sol: bool) -> (int, list):
     max_iter = 10**6
 
     while max_iter > 0 and loss > 0:
-        val_i, val_j = random.choices([i for i in range(sample['n_pupils'])], k=2)
-        i, j = line.index(val_i), line.index(val_j)
+        i, j = random.choices([i for i in range(sample['n_pupils'])], k=2)
 
         tmp_line = line.copy()
         tmp_line[i], tmp_line[j] = tmp_line[j], tmp_line[i]
