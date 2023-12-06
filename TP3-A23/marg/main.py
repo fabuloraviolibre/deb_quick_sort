@@ -1,5 +1,6 @@
-from itertools import permutations
 import time
+import random
+from itertools import permutations
 
 
 def load_sample(path: str) ->dict:
@@ -61,14 +62,14 @@ def compute_loss(sample: dict, line: list) -> float:
     problematic_pairs = 0
     n = len(line)
 
-    for i in range(n-1):
+    for i in range(1, n):
 
         # Compute problematic_pairs
-        if [line[i], line[i+1]] in sample['pairs'] or [line[i+1], line[i]] in sample['pairs']:
+        if [line[i-1], line[i]] in sample['pairs'] or [line[i], line[i-1]] in sample['pairs']:
             problematic_pairs += 1
 
         # Compute obstructed_pupils
-        for j in range(i+1, n):
+        for j in range(i-1):
             if sample['sizes'][line[j]] > sample['sizes'][line[i]]:
                 obstructed_pupils += 1
                 break
@@ -77,27 +78,21 @@ def compute_loss(sample: dict, line: list) -> float:
     return loss
 
 
-def sort_first(sample: dict) -> (int, list):
-    """
-    Args:
-        sample (dict): sample of pupils to align
-    Returns:
-        loss (int): loss of the returned line
-        line (list): line
-    """
+def algorithm(sample: dict) -> (int, list):
 
-    line = [(i, sample['sizes'][i]) for i in range(sample['n_pupils'])]
-    
-    # First: sort the line by size
-    line = [x[0] for x in sorted(line, key=lambda x: x[1], reverse=True)]
-    
+    """First configuration"""
+
+    # Initial line: pupils sorted by size
+    line = [x[0] for x in sorted([(i, sample['sizes'][i]) for i in range(sample['n_pupils'])], key=lambda x: x[1])]
+
+    # Go through the list to reduce the number of impossible pairs
     for i in range(1, sample['n_pupils']):
 
         # For each pupil who pauses a problem, try to deplace them
         if [line[i-1], line[i]] in sample['pairs'] or [line[i], line[i-1]] in sample['pairs']:
             j = i+1
 
-            while j <= i+10 and j < sample['n_pupils']:
+            while j-i < 10 and j < sample['n_pupils']:
                 if [line[i-1], line[j]] in sample['pairs'] or [line[j], line[i-1]] in sample['pairs']\
                 or [line[j-1], line[i]] in sample['pairs'] or [line[i], line[j-1]] in sample['pairs']:
                     j += 1
@@ -108,15 +103,36 @@ def sort_first(sample: dict) -> (int, list):
                     break
     
     loss = compute_loss(sample, line)
-    return loss, line
+    
+    """Try permutations to improve the configuration
+    Losses before: 15, 6, 96, 0, 111
+    Examples of losses after: 4, 6, 50, 0, 108"""
 
+    max_iter = 500
+
+    while max_iter > 0 and loss > 0:
+        val_i, val_j = random.choices([i for i in range(sample['n_pupils'])], k=2)
+        i, j = line.index(val_i), line.index(val_j)
+
+        tmp_line = line.copy()
+        tmp_line[i], tmp_line[j] = tmp_line[j], tmp_line[i]
+        tmp_loss = compute_loss(sample, tmp_line)
+
+        if tmp_loss < loss:
+            line[i], line[j] = line[j], line[i]
+            loss = tmp_loss
+
+        max_iter -= 1
+
+    return loss, line
 
 
 paths = ["/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_10_25_1.txt",
          "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_60_300_1.txt",
          "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_60_1000_1.txt",
          "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_400_1000_1.txt",
-         "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_400_20000_1.txt"]
+         "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_400_20000_1.txt"
+         ]
 
 for path in paths:
     # Load the sample and the pupils
@@ -124,26 +140,11 @@ for path in paths:
 
     # Compute the time of execution
     start_time = time.time()
-    loss, line = sort_first(sample)
+    loss, line = algorithm(sample)
     end_time = time.time()
     t = end_time - start_time
 
-    print('Sample:', path)
+    # print('Sample:', path)
     print('Execution time:', t)
     # print('Line:', line)
     print('Loss:', loss, '\n')
-
-"""
-print('For the first sample:')
-sample = load_sample("/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_10_25_1.txt")
-true_loss, true_line = compute_true_sol(sample)
-print(true_loss)
-print(true_line)
-
-Affiche :
-For the first sample:
-4
-[0, 6, 7, 4, 5, 9, 8, 1, 2, 3]
-
-Donc algorithme non optimal
-"""
