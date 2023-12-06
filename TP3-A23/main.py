@@ -1,6 +1,6 @@
-import time
 import random
-from itertools import permutations
+import argparse
+import numpy as np
 
 
 def load_sample(path: str) ->dict:
@@ -26,29 +26,18 @@ def load_sample(path: str) ->dict:
         return sample
     
 
-def compute_true_sol(sample: dict) -> (int, list):
-    """Compute the true solution by generating and testing
-    Args:
-        sample (dict): sample to test
-    Returns:
-        val_opt (int): loss of optimal line
-        line_opt (list): optimal line
-    """
-
-    pupils = [i for i in range(sample['n_pupils'])]
-    all_permutations = [list(perm) for perm in list(permutations(pupils))]
-    line_opt = pupils
-    val_opt = compute_loss(sample, line_opt)
-
-    for perm in all_permutations:
-        loss = compute_loss(sample, perm)
-        if loss < val_opt:
-            val_opt = loss
-            line_opt = perm
-    
-    return val_opt, line_opt
+# NB : code repris de check_sol fourni par le professeur
+def get_matrixes(sizes, pairs):
+        sM = (np.array(sizes)[:, np.newaxis] >= sizes)
+        n = len(sizes)
+        pM = np.zeros((n,n))
+        pairs = pairs + [p[::-1] for p in pairs]
+        for p in pairs:
+            pM[p] = 1
+        return sM, pM
 
 
+# NB : code repris (et légèrement adapté) de check_sol fourni par le professeur
 def compute_loss(sample: dict, line: list) -> float:
     """Compute loss given by écoliers obstrués + 10*(paires d’écoliers se chamaillant)
     Args:
@@ -58,27 +47,32 @@ def compute_loss(sample: dict, line: list) -> float:
         loss (float): loss
     """
 
-    obstructed_pupils = 0
-    problematic_pairs = 0
-    n = len(line)
-
-    for i in range(1, n):
-
-        # Compute problematic_pairs
-        if [line[i-1], line[i]] in sample['pairs'] or [line[i], line[i-1]] in sample['pairs']:
-            problematic_pairs += 1
-
-        # Compute obstructed_pupils
-        for j in range(i-1):
-            if sample['sizes'][line[j]] > sample['sizes'][line[i]]:
-                obstructed_pupils += 1
-                break
-    
-    loss = obstructed_pupils + 10*problematic_pairs
-    return loss
+    pairs = list(map(tuple,sample['pairs']))
+    sM , pM = get_matrixes(sample['sizes'], pairs)
+    loss = 0; n_a = 0
+    tallest = sample['sizes'][line[0]]
+    for i in range(1, sM.shape[0]):
+        size = sample['sizes'][line[i]]
+        if size >= tallest:
+            tallest = size
+        else:
+            loss += 1
+        
+        n_a += pM[line[i-1], line[i]]
+    return loss + 10*int(n_a)
 
 
-def algorithm(sample: dict) -> (int, list):
+def algorithm(path: str, print_sol: bool) -> (int, list):
+    """Main function: our optimization algorithm
+    Args:
+        sample (dict): sample of pupils to align
+    Returns:
+        loss (int): final loss
+        line (list): final line
+    """
+
+    # Load the sample
+    sample = load_sample(path)
 
     """First configuration"""
 
@@ -103,12 +97,18 @@ def algorithm(sample: dict) -> (int, list):
                     break
     
     loss = compute_loss(sample, line)
+
+    # Print either the current solution or its loss
+    if print_sol:
+        print(' '.join(map(str, line)), flush=True)
+    else:
+        print(loss, flush=True)
     
     """Try permutations to improve the configuration
-    Losses before: 15, 6, 96, 0, 111
+    Example of losses before: 15, 6, 96, 0, 111
     Examples of losses after: 4, 6, 50, 0, 108"""
 
-    max_iter = 500
+    max_iter = 10**6
 
     while max_iter > 0 and loss > 0:
         val_i, val_j = random.choices([i for i in range(sample['n_pupils'])], k=2)
@@ -118,33 +118,28 @@ def algorithm(sample: dict) -> (int, list):
         tmp_line[i], tmp_line[j] = tmp_line[j], tmp_line[i]
         tmp_loss = compute_loss(sample, tmp_line)
 
+        # Update the line if we get a better configuration
         if tmp_loss < loss:
             line[i], line[j] = line[j], line[i]
             loss = tmp_loss
+            # Print either the current solution or its loss
+            if print_sol:
+                print(' '.join(map(str, line)), flush=True)
+            else:
+                print(loss, flush=True)
 
         max_iter -= 1
 
     return loss, line
 
 
-paths = ["/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_10_25_1.txt",
-         "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_60_300_1.txt",
-         "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_60_1000_1.txt",
-         "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_400_1000_1.txt",
-         "/home/margot/Cours EPM/INF8775 - Conception et Analyse d'Algorithme/TPs/TP3-A23/samples/sample_400_20000_1.txt"
-         ]
+if __name__ == "__main__":
+    # Parse arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-e", "--examplaire", required=True, type=str,
+                        help="[path_vers_exemplaire]")
+    parser.add_argument("-p", "--print_solution", required=False, action='store_true',
+                        help="Affiche la nouvelle solution trouvée, en partant du premier rang")
+    args = parser.parse_args()
 
-for path in paths:
-    # Load the sample and the pupils
-    sample = load_sample(path)
-
-    # Compute the time of execution
-    start_time = time.time()
-    loss, line = algorithm(sample)
-    end_time = time.time()
-    t = end_time - start_time
-
-    # print('Sample:', path)
-    print('Execution time:', t)
-    # print('Line:', line)
-    print('Loss:', loss, '\n')
+    loss, line = algorithm(args.examplaire, args.print_solution)
